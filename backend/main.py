@@ -35,7 +35,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS + ["*"],  # Allow all in dev
+    allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -52,6 +52,11 @@ app.include_router(score.router, prefix="/api/score", tags=["ArthScore"])
 app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
 app.include_router(demo.router, prefix="/api/demo", tags=["Demo"])
 app.include_router(marketplace.router, prefix="/api/marketplace", tags=["Marketplace"])
+
+# Mount static files directory
+static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+os.makedirs(static_dir, exist_ok=True)
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 
 @app.get("/health")

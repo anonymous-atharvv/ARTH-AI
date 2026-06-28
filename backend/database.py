@@ -3,6 +3,7 @@
 SQLAlchemy async engine and session factory.
 Supports PostgreSQL (production) and SQLite (demo/dev).
 """
+# pyrefly: ignore [missing-import]
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 import structlog
@@ -41,6 +42,11 @@ AsyncSessionLocal = async_sessionmaker(
 
 async def create_db_tables():
     """Create all tables on startup (for dev/demo — use migrations in production)."""
+    # Explicitly import models to register them on Base.metadata before creation
+    from models import (
+        User, Transaction, Category, ArthScoreHistory,
+        Document, WhatsAppSession, AnalyticsCache, InsightLog
+    )
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     logger.info("Database tables created/verified")
